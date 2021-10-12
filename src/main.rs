@@ -70,15 +70,23 @@ fn main() {
 
     let data: String = String::from_utf8_lossy(&bytes).parse().unwrap();
 
-    let todos = data.split("\n");
+    if argv.len() == 1 {
+        println!("{}", data);
 
-    println!("{}", data);
-
-    if argv.len() == 1 {}
-
-    for arg in argv {
-        println!("{:?}", arg);
+        std::process::exit(0);
     }
 
-    println!("Hello, world!");
+    let mut todos = data.split("\n").collect::<Vec<&str>>();
+
+    if argv.skip(1).collect::<Vec<String>>().first().unwrap() == "new" {
+        let todo = env::args().skip(1).collect::<Vec<String>>().join(" ");
+
+        todos.push(&todo);
+
+        fs::write(&data_file, todos.join("\n")).expect("Failed to save todos.");
+
+        println!("New todo created!");
+
+        std::process::exit(0);
+    }
 }
